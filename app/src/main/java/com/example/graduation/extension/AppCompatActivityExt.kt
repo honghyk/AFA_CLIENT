@@ -8,7 +8,3 @@ import com.google.sceneform_assets.r
 fun Activity.showToast(message: String, duration: Int = Toast.LENGTH_LONG) {
     Toast.makeText(this, message, duration).show()
 }
-
-fun Fragment.showToast(message: String, duration: Int = Toast.LENGTH_LONG) {
-    Toast.makeText(requireContext(), message, duration).show()
-}

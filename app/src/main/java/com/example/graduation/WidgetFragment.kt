@@ -8,11 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.graduation.databinding.FragmentWidgetBinding
-import com.example.graduation.extension.ScaleDialogFragment
 import com.example.graduation.extension.setThrottledOnClickListener
 import com.example.graduation.extension.showToast
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -20,7 +18,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
-import javax.security.auth.callback.Callback
 
 
 class WidgetFragment : Fragment() {
@@ -83,17 +80,22 @@ class WidgetFragment : Fragment() {
             .flatMapSingle {
                 viewModel.observeUploadImage(requireActivity(), it)
                     .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
             }
             .flatMap {
                 ModelRenderHelper.renderModelWithGLTF(context, it)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnError {
+                        Timber.d("current thread: ${Thread.currentThread()}")
+                        viewModel.imageUri = ""
+                        activity?.showToast("Model rendering failed")
+                    }
+                    .retry()
             }
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 viewModel.renderable = it
-                showToast("Model rendering finished")
-            }, {
-                Timber.d(it)
-            })
+                activity?.showToast("Model rendering finished")
+            }, { Timber.d(it) })
             .addTo(dispose)
     }
 
@@ -104,7 +106,7 @@ class WidgetFragment : Fragment() {
                     viewModel.imageUri = data?.data.toString()
                 }
                 RESULT_CANCELED -> {
-                    showToast("Picking image canceled")
+                    activity?.showToast("Picking image canceled")
                 }
             }
         }
