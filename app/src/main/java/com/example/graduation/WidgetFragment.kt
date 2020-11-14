@@ -110,40 +110,6 @@ class WidgetFragment : Fragment() {
         }
     }
 
-    private fun showScaleDialog() {
-        ScaleDialogFragment.create(object: Callback, ScaleDialogFragment.Callback {
-            override fun onDialogPositiveClick(
-                dialog: DialogFragment, width: Float?, height: Float?, depth: Float?) {
-                val context = context ?: return
-
-                dispose.add(
-                    ModelRenderHelper.renderModelWithGLTF(context, GLTF_ASSET)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({
-                            showToast("Model rendering finished")
-                            viewModel.renderable = it
-                            if(width == null || height == null || depth == null) {
-                                showToast("크기를 다시 입력해주세요")
-                            } else {
-                                // width: 가로, depth: 세로, height: 높이
-                                // width: x, depth: z, height: y
-                                viewModel.scale.set(width, height, depth)
-                                Timber.d("model scale: ${viewModel.scale}")
-                            }
-                        }, {
-                            Timber.d(it)
-                            showToast("Model rendering failed")
-                        })
-                )
-            }
-
-            override fun onDialogCancelClick(dialog: DialogFragment) {
-
-            }
-
-        }).show(parentFragmentManager, ScaleDialogFragment.TAG)
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         dispose.dispose()
