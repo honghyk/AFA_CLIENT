@@ -8,19 +8,27 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.graduation.databinding.FragmentWidgetBinding
+import com.example.graduation.extension.ScaleDialogFragment
 import com.example.graduation.extension.setThrottledOnClickListener
 import com.example.graduation.extension.showToast
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
+import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
+import javax.security.auth.callback.Callback
 
 
 class WidgetFragment : Fragment() {
 
     private val viewModel: MainViewModel by activityViewModels()
     private lateinit var binding: FragmentWidgetBinding
+
+    private val dispose = CompositeDisposable()
 
 //    private val GLTF_ASSET =
 //        "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Duck/glTF/Duck.gltf";
@@ -37,6 +45,7 @@ class WidgetFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_widget, container, false)
+        binding.vm = viewModel
         return binding.root
     }
 

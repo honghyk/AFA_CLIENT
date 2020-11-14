@@ -26,8 +26,8 @@ android {
         jvmTarget = '1.8'
     }
 
-    dataBinding {
-        enabled true
+    buildFeatures {
+        dataBinding true
     }
 
     buildTypes {
@@ -53,7 +53,10 @@ dependencies {
 
     implementation "io.reactivex.rxjava2:rxjava:2.2.10"
     implementation "io.reactivex.rxjava2:rxkotlin:2.4.0"
-    compile 'io.reactivex.rxjava2:rxandroid:2.1.1'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+    implementation "com.squareup.retrofit2:adapter-rxjava2:2.9.0"
+    implementation "com.squareup.retrofit2:converter-gson:2.9.0"
+    implementation "com.google.code.gson:gson:2.8.6"
 
     implementation 'com.google.ar:core:1.19.0'
     implementation "com.google.ar.sceneform.ux:sceneform-ux:$sceneformVersion"
@@ -63,6 +66,10 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation "com.squareup.okhttp3:okhttp:4.9.0"
     implementation "com.squareup.okhttp3:logging-interceptor:4.9.0"
+
+    implementation 'com.trello.rxlifecycle4:rxlifecycle:4.0.1'
+    implementation 'com.trello.rxlifecycle4:rxlifecycle-android:4.0.1'
+    implementation 'com.trello.rxlifecycle4:rxlifecycle-components:4.0.1'
 
     implementation 'com.facebook.fresco:fresco:2.3.0'
     implementation 'de.hdodenhof:circleimageview:3.1.0'

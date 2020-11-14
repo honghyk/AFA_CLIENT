@@ -6,7 +6,7 @@ import androidx.databinding.BindingAdapter
 object BindingAdapters {
 
     @JvmStatic
-    @BindingAdapter("app:gone")
+    @BindingAdapter("gone")
     fun setGone(v: View, gone: Boolean?) {
         if(gone != null) {
             v.visibility = if(gone) View.GONE else View.VISIBLE

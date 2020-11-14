@@ -8,9 +8,14 @@ import androidx.fragment.app.commitNow
 import androidx.lifecycle.Observer
 import com.example.util.DeviceUtil
 import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.Node
+import com.google.ar.sceneform.collision.Box
+import com.google.ar.sceneform.math.Vector3
+import com.google.ar.sceneform.rendering.Renderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import timber.log.Timber
+import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
 
@@ -42,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         arFragment.setOnTapArPlaneListener { hitResult, _, _ ->
             Timber.d("arFragment tapArPlane called")
 
-            vm.renderable?.let {
+            vm.renderable?.let { model ->
                 Timber.d("ModelRender exists")
                 val anchor = hitResult.createAnchor()
                 anchorNode = AnchorNode(anchor).apply {
@@ -50,8 +55,14 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 TransformableNode(arFragment.transformationSystem).apply {
+                    vm.actualScale.value = getActualScale(model, worldScale)
+                    addTransformChangedListener { new, original ->
+                        if(new.worldScale != original.worldScale) {
+                            vm.actualScale.value = getActualScale(model, worldScale)
+                        }
+                    }
+                    renderable = model
                     setParent(anchorNode)
-                    renderable = it
                     vm.modelDeletable.value = true
                     select()
                 }
@@ -82,6 +93,15 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.commit {
             add(R.id.widget_fragment_container, WidgetFragment.create(), WidgetFragment.TAG)
         }
+    }
+
+    private fun getActualScale(model: Renderable, worldScale: Vector3): Vector3 {
+        val modelScale = (model.collisionShape as Box).size
+        return Vector3(
+            ((modelScale.x * worldScale.x * 100).roundToInt() / 100.0f),
+            ((modelScale.y * worldScale.y * 100).roundToInt() / 100.0f),
+            ((modelScale.z * worldScale.z * 100).roundToInt() / 100.0f)
+        )
     }
 
     companion object {
