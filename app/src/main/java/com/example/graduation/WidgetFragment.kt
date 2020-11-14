@@ -55,6 +55,7 @@ class WidgetFragment : Fragment() {
         binding.vm = viewModel
         binding.lifecycleOwner = this
         initViews()
+        observeViewModel()
     }
 
     private fun initViews() {
@@ -74,30 +75,78 @@ class WidgetFragment : Fragment() {
         }
     }
 
+    private fun observeViewModel() {
+        val context = context ?: return
+
+        viewModel.observeImageUri()
+            .filter { it.isNotEmpty() }
+            .flatMapSingle {
+                viewModel.observeUploadImage(requireActivity(), it)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+            }
+            .flatMap {
+                ModelRenderHelper.renderModelWithGLTF(context, it)
+            }
+            .subscribe({
+                viewModel.renderable = it
+                showToast("Model rendering finished")
+            }, {
+                Timber.d(it)
+            })
+            .addTo(dispose)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == GALLERY_REQ_CODE) {
             when (resultCode) {
                 RESULT_OK -> {
-                    val context = context ?: return
-
-                    binding.imagePreview.setImageURI(data?.data, null)
-                    viewModel.imageUri.value = data?.data
-
-                    ModelRenderHelper.renderModelWithGLTF(context, GLTF_ASSET)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({
-                            showToast("Model rendering finished")
-                            viewModel.renderable = it
-                        }, {
-                            showToast("Model rendering failed")
-                            Timber.d(it)
-                        })
+                    viewModel.imageUri = data?.data.toString()
                 }
                 RESULT_CANCELED -> {
                     showToast("Picking image canceled")
                 }
             }
         }
+    }
+
+    private fun showScaleDialog() {
+        ScaleDialogFragment.create(object: Callback, ScaleDialogFragment.Callback {
+            override fun onDialogPositiveClick(
+                dialog: DialogFragment, width: Float?, height: Float?, depth: Float?) {
+                val context = context ?: return
+
+                dispose.add(
+                    ModelRenderHelper.renderModelWithGLTF(context, GLTF_ASSET)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({
+                            showToast("Model rendering finished")
+                            viewModel.renderable = it
+                            if(width == null || height == null || depth == null) {
+                                showToast("크기를 다시 입력해주세요")
+                            } else {
+                                // width: 가로, depth: 세로, height: 높이
+                                // width: x, depth: z, height: y
+                                viewModel.scale.set(width, height, depth)
+                                Timber.d("model scale: ${viewModel.scale}")
+                            }
+                        }, {
+                            Timber.d(it)
+                            showToast("Model rendering failed")
+                        })
+                )
+            }
+
+            override fun onDialogCancelClick(dialog: DialogFragment) {
+
+            }
+
+        }).show(parentFragmentManager, ScaleDialogFragment.TAG)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        dispose.dispose()
     }
 
     companion object {
