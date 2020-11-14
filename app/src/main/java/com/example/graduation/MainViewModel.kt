@@ -5,7 +5,6 @@ import android.os.FileUtils
 import android.os.SystemClock
 import androidx.core.net.toUri
 import androidx.databinding.Bindable
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.graduation.api.Retrofit
 import com.example.graduation.arch.BaseViewModel
@@ -29,8 +28,6 @@ class MainViewModel : BaseViewModel() {
                 modelDeletable.value = false
             }
         }
-
-    val scale = Vector3(1.0f, 1.0f, 1.0f)
 
     val actualScale = MutableLiveData<Vector3>(Vector3())
 

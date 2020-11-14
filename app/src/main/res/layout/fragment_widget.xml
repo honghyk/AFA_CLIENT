@@ -24,8 +24,8 @@
             android:layout_marginBottom="40dp"
             android:background="@drawable/circle_background"
             android:elevation="4dp"
-            android:padding="8dp"
-            android:src="@drawable/ic_baseline_delete_24"
+            android:padding="12dp"
+            android:src="@drawable/ic_delete"
             app:gone="@{!vm.modelDeletable}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -37,7 +37,9 @@
             android:layout_height="60dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
-            android:src="@drawable/ic_baseline_image_24"
+            app:gone="@{!vm.imageUri.empty}"
+            android:elevation="4dp"
+            android:src="@drawable/ic_image"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -48,6 +50,8 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:scaleType="fitCenter"
+            app:gone="@{vm.imageUri.empty}"
+            app:actualImageUri="@{vm.imageUri}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:roundedCornerRadius="16dp" />
