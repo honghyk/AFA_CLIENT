@@ -2,6 +2,7 @@ package com.example.graduation
 
 import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
+import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -24,18 +25,9 @@ class WidgetFragment : Fragment() {
 
     private val viewModel: MainViewModel by activityViewModels()
     private lateinit var binding: FragmentWidgetBinding
+    private lateinit var progressDialog: ProgressDialog
 
     private val dispose = CompositeDisposable()
-
-//    private val GLTF_ASSET =
-//        "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Duck/glTF/Duck.gltf";
-
-//    private val GLTF_ASSET = "https://poly.googleusercontent.com/downloads/0BnDT3T1wTE/85QOHCZOvov/Mesh_Beagle.gltf"
-
-//    private val GLTF_ASSET = "https://grad-project-s3.s3.ap-northeast-2.amazonaws.com/sofa.gltf"
-
-    private val GLTF_ASSET =
-        "https://grad-project-s3.s3.ap-northeast-2.amazonaws.com/lerhamn-chair-light.gltf"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,7 +49,6 @@ class WidgetFragment : Fragment() {
 
     private fun initViews() {
         with(binding) {
-
             clear.setThrottledOnClickListener {
                 viewModel.clearModelSignal.value = true
             }
@@ -70,6 +61,11 @@ class WidgetFragment : Fragment() {
                 }
             }
         }
+        progressDialog = ProgressDialog(requireContext()).apply {
+            setMessage(getString(R.string.loading))
+            isIndeterminate = true
+            setCancelable(true)
+        }
     }
 
     private fun observeViewModel() {
@@ -78,15 +74,22 @@ class WidgetFragment : Fragment() {
         viewModel.observeImageUri()
             .filter { it.isNotEmpty() }
             .flatMapSingle {
-                viewModel.observeUploadImage(requireActivity(), it)
+                progressDialog.show()
+                viewModel.observeUploadImage(context, it)
                     .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnError {
+                        viewModel.imageUri = ""
+                        progressDialog.dismiss()
+                        activity?.showToast("Network error occurred")
+                    }
             }
             .flatMap {
                 ModelRenderHelper.renderModelWithGLTF(context, it)
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnError {
-                        Timber.d("current thread: ${Thread.currentThread()}")
                         viewModel.imageUri = ""
+                        progressDialog.dismiss()
                         activity?.showToast("Model rendering failed")
                     }
                     .retry()
@@ -95,6 +98,7 @@ class WidgetFragment : Fragment() {
             .subscribe({
                 viewModel.renderable = it
                 activity?.showToast("Model rendering finished")
+                progressDialog.dismiss()
             }, { Timber.d(it) })
             .addTo(dispose)
     }
