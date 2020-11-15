@@ -2,8 +2,8 @@
     <string name="app_name">Graduation</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="width_format">가로: %.2fm</string>
-    <string name="depth_format">세로: %.2fm</string>
-    <string name="height_format">높이: %.2fm</string>
+    <string name="width_format">가로: &lt;b>%.2fm&lt;/b></string>
+    <string name="depth_format">세로: &lt;b>%.2fm&lt;/b></string>
+    <string name="height_format">높이: &lt;b>%.2fm&lt;/b></string>
     <string name="loading">Loading</string>
 </resources>

@@ -21,7 +21,7 @@
             android:id="@+id/clear"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_marginBottom="40dp"
+            android:layout_marginBottom="16dp"
             android:background="@drawable/circle_background"
             android:elevation="4dp"
             android:padding="12dp"
@@ -35,74 +35,83 @@
             android:id="@+id/open_gallery"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="20dp"
-            app:gone="@{!vm.imageUri.empty}"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/circle_background"
             android:elevation="4dp"
+            android:padding="12dp"
             android:src="@drawable/ic_image"
+            app:gone="@{!vm.imageUri.empty}"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="parent" />
 
-        <com.facebook.drawee.view.SimpleDraweeView
-            android:id="@+id/image_preview"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:scaleType="fitCenter"
-            app:gone="@{vm.imageUri.empty}"
-            app:actualImageUri="@{vm.imageUri}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:roundedCornerRadius="16dp" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:background="@android:color/darker_gray"
-            android:padding="4dp"
+            android:background="@drawable/round_corner_background"
+            android:elevation="4dp"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="8dp"
+            android:gravity="center"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/width"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@{@string/width_format(vm.actualScale.z)}"
+                app:textHtml="@{@string/width_format(vm.actualScale.z)}"
+                android:textColor="@android:color/black"
                 android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="13m" />
+                android:layout_weight="1"
+                tools:text="13 m" />
 
             <TextView
                 android:id="@+id/depth"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@{@string/depth_format(vm.actualScale.x)}"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                app:textHtml="@{@string/depth_format(vm.actualScale.x)}"
+                android:textColor="@android:color/black"
                 android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="@+id/width"
-                app:layout_constraintStart_toStartOf="@+id/width"
-                app:layout_constraintTop_toBottomOf="@+id/width"
                 tools:text="13 m" />
 
             <TextView
                 android:id="@+id/height"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@{@string/height_format(vm.actualScale.y)}"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                app:textHtml="@{@string/height_format(vm.actualScale.y)}"
+                android:textColor="@android:color/black"
                 android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="@+id/width"
-                app:layout_constraintStart_toStartOf="@+id/width"
-                app:layout_constraintTop_toBottomOf="@+id/depth"
                 tools:text="13 m" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
 
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/image_preview"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:scaleType="fitCenter"
+            app:gone="@{vm.imageUri.empty}"
+            app:actualImageUri="@{vm.imageUri}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+            app:roundedCornerRadius="8dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

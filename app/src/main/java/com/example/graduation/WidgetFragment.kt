@@ -64,7 +64,7 @@ class WidgetFragment : Fragment() {
         progressDialog = ProgressDialog(requireContext()).apply {
             setMessage(getString(R.string.loading))
             isIndeterminate = true
-            setCancelable(true)
+            setCancelable(false)
         }
     }
 
