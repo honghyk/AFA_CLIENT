@@ -87,5 +87,6 @@ class MainViewModel : BaseViewModel() {
     fun clear() {
         renderable = null
         imageUri = ""
+        actualScale.value = Vector3(0f, 0f, 0f)
     }
 }

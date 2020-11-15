@@ -47,24 +47,25 @@ class MainActivity : AppCompatActivity() {
         arFragment.setOnTapArPlaneListener { hitResult, _, _ ->
             Timber.d("arFragment tapArPlane called")
 
-            vm.renderable?.let { model ->
-                Timber.d("ModelRender exists")
-                val anchor = hitResult.createAnchor()
-                anchorNode = AnchorNode(anchor).apply {
-                    setParent(arFragment.arSceneView.scene)
-                }
-
-                TransformableNode(arFragment.transformationSystem).apply {
-                    vm.actualScale.value = getActualScale(model, worldScale)
-                    addTransformChangedListener { new, original ->
-                        if(new.worldScale != original.worldScale) {
-                            vm.actualScale.value = getActualScale(model, worldScale)
-                        }
+            if(vm.renderable != null && vm.modelDeletable.value == false) {
+                vm.renderable?.let { model ->
+                    val anchor = hitResult.createAnchor()
+                    anchorNode = AnchorNode(anchor).apply {
+                        setParent(arFragment.arSceneView.scene)
                     }
-                    renderable = model
-                    setParent(anchorNode)
-                    vm.modelDeletable.value = true
-                    select()
+
+                    TransformableNode(arFragment.transformationSystem).apply {
+                        vm.actualScale.value = getActualScale(model, worldScale)
+                        addTransformChangedListener { new, original ->
+                            if(new.worldScale != original.worldScale) {
+                                vm.actualScale.value = getActualScale(model, worldScale)
+                            }
+                        }
+                        renderable = model
+                        setParent(anchorNode)
+                        vm.modelDeletable.value = true
+                        select()
+                    }
                 }
             }
         }
