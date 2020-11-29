@@ -74,10 +74,13 @@ class WidgetFragment : Fragment() {
         viewModel.observeImageUri()
             .filter { it.isNotEmpty() }
             .flatMapSingle {
+                var start = 0L
                 progressDialog.show()
                 viewModel.observeUploadImage(context, it)
+                    .doOnSubscribe { start = System.currentTimeMillis() }
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSuccess { Timber.d("network call success: ${System.currentTimeMillis() - start}ms") }
                     .doOnError {
                         viewModel.imageUri = ""
                         progressDialog.dismiss()
